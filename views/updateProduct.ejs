@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Update Product</title>
+  </head>
+
+  <body class="bg-slate-800 text-white min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-slate-900 border-b border-slate-800">
+      <div class="max-w-7xl mx-auto px-6 py-4 grid grid-cols-3 items-center">
+          
+        <!-- Left spacer -->
+        <div></div>
+
+        <!-- Centered, evenly spaced nav -->
+        <div class="flex justify-between w-[360px] mx-auto p-1">
+          <a href="/home" class="text-base font-medium text-slate-300 hover:text-white transition">Home</a>
+          <a href="/customerdashboard" class="text-base font-medium text-slate-300 hover:text-white transition">Customers</a>
+          <a href="/productdashboard" class="text-base font-medium text-slate-300 hover:text-white transition">Products</a>
+        </div>
+
+        <!-- Right: Logout -->
+        <div class="flex justify-end">
+          <form action="/api/logout" method="POST">
+            <button class="px-4 py-2 text-sm font-medium rounded-md bg-[#b35973] hover:bg-[#c36a84] transition">Log out</button>
+          </form>
+        </div>
+
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <main class="max-w-4xl mx-auto px-4 py-10">
+      
+      <div class="bg-slate-900 border border-slate-700 rounded-xl p-8">
+        <h2 class="text-2xl font-semibold mb-6">Update Product</h2>
+
+        <form class="grid grid-cols-1 gap-6 sm:grid-cols-2" action="/api/updateproduct/<%= product._id  %>" method="post">
+
+          <!-- Product Name -->
+          <div>
+            <label class="block mb-1 text-slate-300 font-medium">Product Name</label>
+            <input
+              name="name"
+              type="text"
+              value="<%= product.name  %>"
+              placeholder="Enter product name"
+              class="w-full p-2 bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+            />
+          </div>
+
+          <!-- Product Quantity -->
+          <div>
+            <label class="block mb-1 text-slate-300 font-medium">Quantity</label>
+            <input
+              name="quantity"
+              type="number"
+              value="<%= product.quantity  %>"
+              placeholder="Enter quantity"
+              class="w-full p-2 bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+            />
+          </div>
+
+          <!-- Price -->
+          <div>
+            <label class="block mb-1 text-slate-300 font-medium">Price</label>
+            <input
+              name="price"
+              type="number"
+              value="<%= product.price  %>"
+              placeholder="Enter price"
+              class="w-full p-2 bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+            />
+          </div>
+
+          <!-- Add Product Button -->
+          <div class="sm:col-span-2 flex justify-center mt-4">
+            <button
+              type="submit"
+              class="px-6 py-2.5 bg-indigo-600 rounded-md font-medium hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500"
+            >
+              Update
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </main>
+
+  </body>
+</html>

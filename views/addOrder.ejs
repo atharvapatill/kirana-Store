@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Order Form</title>
+  </head>
+
+  <body class="bg-slate-800 text-white min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-slate-900 border-b border-slate-800">
+      <div class="max-w-7xl mx-auto px-6 py-4 grid grid-cols-3 items-center"> 
+        <div></div>
+        <div class="flex justify-between w-[360px] mx-auto p-1">
+          <a href="/home" class="text-base font-medium text-slate-300 hover:text-white transition">Home</a>
+          <a href="/customerdashboard" class="text-base font-medium text-slate-300 hover:text-white transition">Customers</a>
+          <a href="/productdashboard" class="text-base font-medium text-slate-300 hover:text-white transition">Products</a>
+        </div>
+        
+
+        <div class="flex justify-end">
+          <form action="/api/logout" method="POST">
+            <button class="px-4 py-2 text-sm font-medium rounded-md bg-[#b35973] hover:bg-[#c36a84] transition">Log out</button>
+          </form>
+        </div>
+        
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <main class="max-w-5xl mx-auto px-4 py-10">
+      <div class="bg-slate-900 border border-slate-700 rounded-xl p-8">
+        <h2 class="text-2xl font-semibold mb-6">Create Order</h2>
+        <div hidden id="customerId" ><%= customerId  %></div>
+        <div hidden id="noOfProducts"><%= noOfProducts %></div>
+
+        <div class="space-y-4">
+
+          <!-- Header Row -->
+          <div class="grid grid-cols-3 gap-4 font-medium border-b border-slate-700 pb-2">
+            
+            <div>Product </div>
+            <div>Quantity</div>
+            <div>Price (₹)</div>
+          </div>
+
+
+          <% for (let index = 1; index <= noOfProducts; index++) { %>
+            <div class="grid grid-cols-3 gap-4 items-center">
+            <select name="productName" onchange="afterSelect(this)" class="product<%= index %> w-full p-2 bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                <option value="">Select Product</option>
+                <% for (let j = 0; j < products.length; j++) { %>
+                   <option value="<%= products[j]._id %>" data-quantity="<%= products[j].quantity %>" data-price="<%= products[j].price%>" > <%= products[j].name %> </option>
+              <%  } %>
+            </select>
+            
+            <input type="number" min="1" name="quantity" placeholder="Qty" class="product<%= index %> w-full p-2 bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-indigo-500 focus:outline-none"/>
+
+            <input type="number" name="price" disabled placeholder="Price" class="product<%= index %> w-full p-2 bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-indigo-500 focus:outline-none"/>
+
+            </div>
+         <% } %>
+
+          <!-- Submit -->
+          <div class="flex justify-center mt-6">
+            <button onclick="submitOrder()" class="px-6 py-2.5 bg-indigo-600 rounded-md font-medium hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500">
+              Submit Order
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </body>
+
+  <script>
+    function afterSelect(selectElement){
+        const selectedOption = selectElement.options[selectElement.selectedIndex]
+
+        const productId = selectedOption.value
+        const quantityAvailable = selectedOption.dataset.quantity
+        const price = selectedOption.dataset.price
+
+        const className = selectElement.classList[0]
+        
+        const quantityInput = selectElement.nextElementSibling;
+        const priceInput = selectElement.nextElementSibling.nextElementSibling;
+
+        quantityInput.max = quantityAvailable; 
+        quantityInput.placeholder = "Available Stock : " + quantityAvailable;
+        priceInput.value = price;
+    }
+
+    async function submitOrder(){
+        let products = [];
+        let amount = 0;
+
+        const customerId = document.getElementById("customerId").innerText;
+        const noOfProducts = parseInt(document.getElementById("noOfProducts").innerText);
+        
+        for (let index = 1; index <= noOfProducts; index++) {
+
+            const selectElement = document.querySelector(`.product${index}`)
+
+            const product_id = selectElement.value;
+            const quantity = parseInt(selectElement.nextElementSibling.value);
+            const maxQuantity = parseInt(selectElement.nextElementSibling.max);
+            const price = parseInt(selectElement.nextElementSibling.nextElementSibling.value);
+            console.log(product_id,quantity,price,maxQuantity);
+
+            if(quantity>maxQuantity){
+              alert("Quantity is greater than available stock");
+              products=[];
+              amount=0;
+              return;
+            }
+
+            amount+= quantity * price;
+
+            const finalProduct = {
+                product_id : product_id,
+                quantity : quantity,
+                price : price,
+            };
+
+            products.push(finalProduct);
+        }
+
+        const response = await fetch(`/api/addorders/${customerId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ customer_id: customerId, products: products, amount:amount }),
+        });
+
+        const result = await response.json();
+
+        if(result.redirect){
+            window.location.href = result.redirect;
+        }
+    }
+  </script>
+</html>
