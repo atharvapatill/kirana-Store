@@ -77,6 +77,8 @@ Create a `.env` file in the project root:
 
 ```env
 MONGODB_URL=your_mongodb_connection_string
+GOOGLE_APP_PASSWORD=your_google_app_password
+USER_MAIL=your_email@gmail.com
 ```
 
 ### 4. Start the Application
