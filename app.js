@@ -34,6 +34,10 @@ app.use("/api",productRouter)
 app.use("/api",orderRouter)
 app.use("/api",customerRouter)
 
+app.get("/",(req,res)=>{
+    res.redirect("/home")
+});
+
 app.get("/login",loginEJS)
 app.get("/registration",registrationEJS)
 
@@ -54,6 +58,7 @@ app.get("/customer/:id",customerEJS)
 app.get("/edit/:id",updateCustomerEJS)
 app.get("/customerdashboard",customerDashboardEJS)
 app.get("/home",homeEJS)
+
 
 connectDB()
 
